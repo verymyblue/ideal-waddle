@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>끝말잇기 게임</title>
+    <style>
+        /* 게임 스타일 (끄투 느낌을 살린 간단한 디자인) */
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #game-container { background-color: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 400px; }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        #current-word { font-size: 4em; color: #3498db; font-weight: bold; margin: 20px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        #input-container { margin-top: 30px; display: flex; gap: 10px; }
+        input[type="text"] { flex-grow: 1; padding: 15px; border: 2px solid #bdc3c7; border-radius: 10px; font-size: 1.2em; transition: border-color 0.3s; }
+        input[type="text"]:focus { outline: none; border-color: #3498db; }
+        button { padding: 15px 30px; background-color: #27ae60; color: white; border: none; border-radius: 10px; font-size: 1.2em; cursor: pointer; transition: background-color 0.3s; font-weight: bold; }
+        button:hover { background-color: #2ecc71; }
+        #message { margin-top: 20px; font-size: 1.1em; min-height: 1.4em; }
+        .error { color: #e74c3c; }
+        .success { color: #27ae60; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>끝말잇기!</h1>
+        <p>제시된 단어의 마지막 글자로 시작하는 단어를 입력하세요.</p>
+        <div id="current-word">시작!</div>
+        <div id="input-container">
+            <input type="text" id="word-input" placeholder="단어를 입력하세요..." autofocus>
+            <button onclick="checkWord()">입력</button>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // 게임 상태 변수
+        let currentWord = "자바"; // 첫 번째 단어 설정
+        let usedWords = [currentWord]; // 사용된 단어 목록
+        let wordDisplay = document.getElementById('current-word');
+        let inputField = document.getElementById('word-input');
+        let messageBox = document.getElementById('message');
+
+        // 화면 초기화
+        wordDisplay.textContent = currentWord;
+        inputField.focus();
+
+        // 엔터키 입력 처리
+        inputField.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkWord();
+            }
+        });
+
+        // 단어 검증 및 게임 진행 함수
+        function checkWord() {
+            let playerWord = inputField.value.trim(); // 입력값 가져오기 (공백 제거)
+
+            // 입력값 초기화 및 포커스 유지
+            inputField.value = '';
+            inputField.focus();
+
+            // 입력 검증
+            if (playerWord.length < 2) {
+                showMessage("두 글자 이상의 단어를 입력해주세요.", "error");
+                return;
+            }
+
+            if (usedWords.includes(playerWord)) {
+                showMessage("이미 사용된 단어입니다.", "error");
+                return;
+            }
+
+            // 끝말잇기 규칙 확인
+            let lastChar = currentWord[currentWord.length - 1];
+            let firstChar = playerWord[0];
+
+            if (firstChar === lastChar) {
+                // 성공: 단어 업데이트 및 메시지 표시
+                currentWord = playerWord;
+                usedWords.push(currentWord);
+                wordDisplay.textContent = currentWord;
+                showMessage("정답입니다! 다음 단어를 입력하세요.", "success");
+            } else {
+                // 실패: 오류 메시지 표시
+                showMessage(`'${lastChar}'(으)로 시작하는 단어를 입력해주세요.`, "error");
+            }
+        }
+
+        // 메시지 표시 함수
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = type;
+            // 메시지 자동 사라짐 (옵션)
+            // setTimeout(() => { messageBox.textContent = ''; messageBox.className = ''; }, 3000);
+        }
+    </script>
+</body>
+</html>
